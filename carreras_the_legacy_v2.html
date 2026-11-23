@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ffffff">
+    <title>THE LEGACY · Run Club</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ink: '#0B0B0C',
+                        mute: '#6B6B70',
+                        line: '#E8E8EA',
+                        surface: '#F5F5F3',
+                        volt: '#CCF84A',
+                        voltdeep: '#9CCB12',
+                        flame: '#FF5A2C',
+                        leaf: '#0F9D6B',
+                        sky: '#3B5BFF',
+                    },
+                    fontFamily: {
+                        display: ['"Bricolage Grotesque"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    borderRadius: {
+                        '4xl': '2rem',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #FFFFFF;
+            color: #0B0B0C;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .font-display {
+            font-family: 'Bricolage Grotesque', sans-serif;
+            letter-spacing: -0.03em;
+        }
+
+        /* Soft background glow behind the hero */
+        .hero-glow {
+            background:
+                radial-gradient(600px 300px at 12% 0%, rgba(204, 248, 74, 0.35), transparent 70%),
+                radial-gradient(500px 280px at 95% 10%, rgba(59, 91, 255, 0.10), transparent 70%);
+        }
+
+        /* Range slider */
+        input[type=range].volt-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range].volt-slider:focus { outline: none; }
+        input[type=range].volt-slider::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 6px;
+            cursor: pointer;
+            background: #E8E8EA;
+            border-radius: 999px;
+        }
+        input[type=range].volt-slider::-webkit-slider-thumb {
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #0B0B0C;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            border: 3px solid #CCF84A;
+            box-shadow: 0 2px 6px rgba(11, 11, 12, 0.25);
+            transition: transform 0.15s ease;
+        }
+        input[type=range].volt-slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        input[type=range].volt-slider::-moz-range-track {
+            height: 6px; background: #E8E8EA; border-radius: 999px;
+        }
+        input[type=range].volt-slider::-moz-range-thumb {
+            height: 16px; width: 16px; border-radius: 50%;
+            background: #0B0B0C; border: 3px solid #CCF84A; cursor: pointer;
+        }
+
+        /* Segmented pill transition */
+        .segment-pill {
+            transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), width 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* Event cards */
+        .event-card {
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .event-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 24px 40px -20px rgba(11, 11, 12, 0.22);
+        }
+        .event-card img.cover {
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .event-card:hover img.cover { transform: scale(1.05); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #D4D4D8; border-radius: 999px; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-volt selection:text-ink">
+
+    <!-- Toasts -->
+    <div id="toast-container" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] flex flex-col items-center gap-2 pointer-events-none"></div>
+
+    <!-- NAV -->
+    <header class="sticky top-0 z-30 bg-white/85 backdrop-blur-xl border-b border-line/70">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+
+            <!-- Wordmark -->
+            <button onclick="navigateTo('home')" class="flex items-center gap-2.5 text-left group focus:outline-none shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-volt text-ink flex items-center justify-center font-display font-extrabold text-sm group-hover:rotate-[-6deg] transition-transform">
+                    TL
+                </div>
+                <span class="font-display font-extrabold text-xl sm:text-[22px] leading-none text-ink">THE LEGACY</span>
+            </button>
+
+            <!-- Search + actions -->
+            <div class="flex items-center gap-2 flex-1 justify-end max-w-xl">
+                <div class="relative flex-1 sm:max-w-xs">
+                    <i data-lucide="search" class="w-4 h-4 text-mute absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Buscar carreras, lugares..."
+                        class="w-full pl-10 pr-9 py-2.5 bg-surface border border-transparent rounded-full text-sm text-ink placeholder:text-mute/80 focus:outline-none focus:bg-white focus:border-ink transition-all"
+                    >
+                    <button id="clear-search" onclick="clearSearch()" class="hidden absolute right-3 top-1/2 -translate-y-1/2 text-mute hover:text-ink">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+
+                <button
+                    onclick="openEventModal()"
+                    class="inline-flex items-center gap-1.5 px-4 py-2.5 bg-ink hover:bg-ink/85 text-white text-sm font-semibold rounded-full transition-colors shrink-0"
+                    title="Crear nueva carrera o entreno"
+                >
+                    <i data-lucide="plus" class="w-4 h-4"></i>
+                    <span class="hidden md:inline">Nueva cita</span>
+                </button>
+
+                <button
+                    id="admin-btn"
+                    onclick="toggleAdminModal()"
+                    class="relative inline-flex items-center gap-1.5 w-10 h-10 justify-center rounded-full bg-surface hover:bg-line text-ink transition-colors shrink-0"
+                    title="Modo Administrador"
+                >
+                    <i data-lucide="shield" class="w-4 h-4"></i>
+                    <span id="admin-indicator" class="hidden absolute top-0.5 right-0.5 w-3 h-3 bg-flame rounded-full ring-2 ring-white"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1 w-full">
+
+        <!-- ==================== HOME ==================== -->
+        <div id="view-home">
+
+            <!-- HERO -->
+            <section class="hero-glow">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-10 grid lg:grid-cols-[1.15fr_1fr] gap-10 lg:gap-14 items-center">
+
+                    <div class="space-y-6">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-line text-xs font-semibold">
+                            <span class="w-2 h-2 rounded-full bg-voltdeep animate-pulse"></span>
+                            Temporada 2026/2027 · Calendario del club
+                        </div>
+                        <h1 class="font-display font-extrabold text-[2.6rem] sm:text-6xl lg:text-[4.25rem] leading-[0.98] text-ink">
+                            Quedadas, carreras y entrenos, <span class="bg-volt px-2 rounded-2xl box-decoration-clone">en un solo sitio</span>.
+                        </h1>
+                        <p class="text-base sm:text-lg text-mute max-w-xl leading-relaxed">
+                            Mira lo que viene, apúntate en dos clics, vota tus favoritas y coordina coche, hotel y ritmos con todo el club.
+                        </p>
+                        <div class="flex flex-wrap items-center gap-3 pt-1">
+                            <a href="#calendario" class="inline-flex items-center gap-2 px-6 py-3.5 bg-ink hover:bg-ink/85 text-white text-sm font-semibold rounded-full transition-colors">
+                                Ver el calendario
+                                <i data-lucide="arrow-down" class="w-4 h-4"></i>
+                            </a>
+                            <button onclick="openEventModal()" class="inline-flex items-center gap-2 px-6 py-3.5 bg-white hover:bg-surface text-ink text-sm font-semibold rounded-full border border-line transition-colors">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Publicar una cita
+                            </button>
+                        </div>
+
+                        <!-- Stats -->
+                        <div class="flex items-center gap-8 pt-4">
+                            <div>
+                                <div id="stat-upcoming" class="font-display font-extrabold text-4xl text-ink leading-none">0</div>
+                                <div class="text-xs text-mute mt-1.5 font-medium">Próximas citas</div>
+                            </div>
+                            <div class="w-px h-10 bg-line"></div>
+                            <div>
+                                <div id="stat-runners" class="font-display font-extrabold text-4xl text-ink leading-none">0</div>
+                                <div class="text-xs text-mute mt-1.5 font-medium">Miembros activos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hero visual -->
+                    <div class="relative">
+                        <div class="relative rounded-4xl overflow-hidden aspect-[4/4.4] sm:aspect-[4/3.6] lg:aspect-[4/4.6] bg-surface">
+                            <img
+                                src="https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1200&q=80"
+                                onerror="this.src='https://placehold.co/1200x1200/F5F5F3/0B0B0C?text=THE+LEGACY'"
+                                alt="Corredores en ruta"
+                                class="absolute inset-0 w-full h-full object-cover"
+                            >
+                            <div class="absolute inset-0 bg-gradient-to-t from-ink/50 via-transparent to-transparent"></div>
+                        </div>
+
+                        <!-- Floating: next event -->
+                        <button id="hero-next" onclick="" class="absolute left-3 right-3 sm:left-5 sm:right-auto bottom-4 sm:bottom-6 sm:w-72 text-left bg-white rounded-3xl p-4 shadow-xl border border-line hidden">
+                        </button>
+
+                        <!-- Floating sticker -->
+                        <div class="absolute -top-3 -right-2 sm:-right-4 rotate-6 bg-volt text-ink font-display font-extrabold text-sm px-4 py-2 rounded-2xl shadow-lg">
+                            ¡A correr! 🏃
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- FILTERS + LIST -->
+            <section id="calendario" class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14 space-y-8">
+
+                <!-- Section title -->
+                <div class="flex flex-wrap items-end justify-between gap-4">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-[0.18em] text-mute">Calendario</span>
+                        <div class="flex items-center gap-3 mt-1">
+                            <h2 id="list-heading" class="font-display font-extrabold text-3xl sm:text-4xl text-ink">Calendario de Convocatorias</h2>
+                            <span id="results-count" class="px-3 py-1 text-xs font-bold bg-volt text-ink rounded-full">0</span>
+                        </div>
+                    </div>
+                    <button id="reset-filters-btn" onclick="resetAllFilters()" class="hidden text-sm font-semibold text-ink underline underline-offset-4 hover:text-flame">
+                        Limpiar filtros
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-surface rounded-4xl p-3 sm:p-4">
+                    <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-3">
+
+                        <!-- Type segmented -->
+                        <div class="relative inline-flex p-1 bg-white rounded-full w-full sm:w-auto self-start" id="type-segmented">
+                            <div id="segment-indicator" class="segment-pill absolute top-1 bottom-1 left-1 bg-ink rounded-full"></div>
+                            <button type="button" data-type="all" onclick="setFilterType('all')" class="relative z-10 flex-1 sm:flex-initial px-5 py-2 text-sm font-semibold text-white transition-colors">Todas</button>
+                            <button type="button" data-type="race" onclick="setFilterType('race')" class="relative z-10 flex-1 sm:flex-initial px-5 py-2 text-sm font-medium text-mute hover:text-ink transition-colors">Carreras</button>
+                            <button type="button" data-type="training" onclick="setFilterType('training')" class="relative z-10 flex-1 sm:flex-initial px-5 py-2 text-sm font-medium text-mute hover:text-ink transition-colors">Entrenos</button>
+                        </div>
+
+                        <!-- Status tabs -->
+                        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+                            <button onclick="setFilterStatus('upcoming')" id="status-upcoming" class="status-tab px-4 py-2 rounded-full text-sm font-semibold bg-volt text-ink transition-all whitespace-nowrap">Próximas</button>
+                            <button onclick="setFilterStatus('past')" id="status-past" class="status-tab px-4 py-2 rounded-full text-sm font-medium text-mute hover:text-ink hover:bg-white transition-all whitespace-nowrap">Pasadas</button>
+                            <button onclick="setFilterStatus('top')" id="status-top" class="status-tab px-4 py-2 rounded-full text-sm font-medium text-mute hover:text-ink hover:bg-white transition-all inline-flex items-center gap-1.5 whitespace-nowrap">
+                                <i data-lucide="flame" class="w-4 h-4 text-flame"></i>
+                                Top
+                            </button>
+                        </div>
+
+                        <!-- Distance + sort -->
+                        <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+                            <div class="flex items-center gap-3 flex-1 sm:min-w-[240px] bg-white px-4 py-2.5 rounded-full">
+                                <span class="text-xs font-medium text-mute whitespace-nowrap">Hasta</span>
+                                <input
+                                    type="range"
+                                    id="distance-slider"
+                                    min="0" max="100" step="1" value="100"
+                                    oninput="setFilterDistance(this.value)"
+                                    class="volt-slider"
+                                >
+                                <span id="distance-label" class="text-xs font-bold text-ink tabular-nums min-w-[48px] text-right">Todas</span>
+                            </div>
+
+                            <div class="relative">
+                                <select
+                                    id="sort-select"
+                                    onchange="setSortBy(this.value)"
+                                    class="appearance-none bg-white rounded-full pl-4 pr-9 py-2.5 text-sm font-semibold text-ink focus:outline-none focus:ring-2 focus:ring-ink cursor-pointer"
+                                    title="Ordenar eventos"
+                                >
+                                    <option value="date">Fecha</option>
+                                    <option value="votes">Popularidad</option>
+                                    <option value="distance">Distancia</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="w-4 h-4 text-mute absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grid -->
+                <div id="events-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+                <!-- Empty state -->
+                <div id="empty-state" class="hidden bg-surface rounded-4xl p-12 text-center space-y-3">
+                    <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center mx-auto text-ink">
+                        <i data-lucide="compass" class="w-6 h-6"></i>
+                    </div>
+                    <h3 class="font-display font-extrabold text-2xl text-ink">Nada por aquí... todavía</h3>
+                    <p class="text-sm text-mute max-w-md mx-auto">No hay carreras o entrenamientos que coincidan con los filtros. Prueba ampliando la distancia o limpiando la búsqueda.</p>
+                    <div class="pt-2">
+                        <button onclick="resetAllFilters()" class="px-5 py-2.5 bg-ink text-white text-sm font-semibold rounded-full hover:bg-ink/85 transition-colors">
+                            Mostrar todo el calendario
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- HOW IT WORKS -->
+            <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-14">
+                <div class="mb-8">
+                    <span class="text-xs font-bold uppercase tracking-[0.18em] text-mute">Cómo funciona</span>
+                    <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-ink mt-1">Apuntarse es cuestión de segundos</h2>
+                </div>
+                <div class="grid md:grid-cols-3 gap-5">
+                    <div class="bg-surface rounded-4xl p-7 space-y-3">
+                        <div class="font-display font-extrabold text-5xl text-voltdeep">01</div>
+                        <h3 class="font-display font-bold text-xl">Elige tu cita</h3>
+                        <p class="text-sm text-mute leading-relaxed">Filtra por tipo, distancia o popularidad y encuentra la carrera o tirada que encaja contigo.</p>
+                    </div>
+                    <div class="bg-surface rounded-4xl p-7 space-y-3">
+                        <div class="font-display font-extrabold text-5xl text-voltdeep">02</div>
+                        <h3 class="font-display font-bold text-xl">Apúntate en la lista</h3>
+                        <p class="text-sm text-mute leading-relaxed">Pon tu nombre y tu objetivo o grupo de ritmo. Si la carrera es oficial, gestiona el dorsal en su web.</p>
+                    </div>
+                    <div class="bg-surface rounded-4xl p-7 space-y-3">
+                        <div class="font-display font-extrabold text-5xl text-voltdeep">03</div>
+                        <h3 class="font-display font-bold text-xl">Coordina con el club</h3>
+                        <p class="text-sm text-mute leading-relaxed">Comparte coche, hotel y sensaciones en la bitácora de cada cita. Todos sabemos quién viene.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CTA BAND -->
+            <section class="max-w-6xl mx-auto px-4 sm:px-6 pb-4">
+                <div class="bg-ink rounded-4xl px-6 sm:px-12 py-12 sm:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
+                    <div class="absolute -right-10 -top-10 w-56 h-56 rounded-full bg-volt/90 blur-3xl opacity-40"></div>
+                    <div class="relative space-y-2 max-w-xl">
+                        <h2 class="font-display font-extrabold text-3xl sm:text-4xl text-white leading-tight">¿Tienes una quedada en mente?</h2>
+                        <p class="text-white/70 text-sm sm:text-base">Publícala en un minuto y deja que el club se apunte.</p>
+                    </div>
+                    <button onclick="openEventModal()" class="relative inline-flex items-center gap-2 px-6 py-3.5 bg-volt hover:bg-white text-ink text-sm font-bold rounded-full transition-colors shrink-0">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Crear nueva cita
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== DETAIL ==================== -->
+        <div id="view-detail" class="hidden max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-6"></div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="mt-16 border-t border-line">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-mute">
+            <div class="flex items-center gap-2.5">
+                <span class="font-display font-extrabold text-base text-ink">THE LEGACY</span>
+                <span>·</span>
+                <span>Run Club · Calendario 2026/2027</span>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-4 font-medium">
+                <button onclick="exportData()" class="hover:text-ink underline underline-offset-4 transition-colors">Exportar JSON</button>
+                <label class="hover:text-ink underline underline-offset-4 transition-colors cursor-pointer">
+                    Importar JSON
+                    <input type="file" accept=".json" onchange="importData(event)" class="hidden">
+                </label>
+                <button onclick="resetDemoData()" class="hover:text-ink underline underline-offset-4 transition-colors">Restaurar datos</button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ==================== MODAL: EVENT ==================== -->
+    <div id="modal-event" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-ink/50 backdrop-blur-sm">
+        <div class="bg-white rounded-4xl max-w-xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl space-y-5">
+            <div class="flex items-start justify-between">
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-[0.18em] text-mute">Convocatoria del club</span>
+                    <h3 id="modal-event-title" class="font-display font-extrabold text-3xl text-ink leading-tight">Nueva cita en el calendario</h3>
+                </div>
+                <button onclick="closeEventModal()" class="p-2 rounded-full bg-surface hover:bg-line text-ink">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <form id="event-form" onsubmit="handleSaveEvent(event)" class="space-y-4">
+                <input type="hidden" id="ev-id">
+
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="cursor-pointer">
+                        <input type="radio" name="ev-type" value="race" checked class="peer sr-only" onchange="toggleTypeFields()">
+                        <div class="p-3.5 rounded-2xl border-2 border-line peer-checked:border-sky peer-checked:bg-sky/5 text-center transition-all">
+                            <div class="text-sm font-bold text-ink">Carrera oficial</div>
+                            <div class="text-[11px] text-mute">Dorsal y competición</div>
+                        </div>
+                    </label>
+                    <label class="cursor-pointer">
+                        <input type="radio" name="ev-type" value="training" class="peer sr-only" onchange="toggleTypeFields()">
+                        <div class="p-3.5 rounded-2xl border-2 border-line peer-checked:border-leaf peer-checked:bg-leaf/5 text-center transition-all">
+                            <div class="text-sm font-bold text-ink">Entrenamiento</div>
+                            <div class="text-[11px] text-mute">Tirada o series de club</div>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Nombre de la prueba o sesión *</label>
+                        <input type="text" id="ev-title" required placeholder="Ej. Media Maratón de Valencia" class="w-full px-4 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Nivel *</label>
+                        <select id="ev-level" class="w-full px-3 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink">
+                            <option value="Todos los niveles">Todos los niveles</option>
+                            <option value="Iniciación">Iniciación</option>
+                            <option value="Intermedio">Intermedio</option>
+                            <option value="Exigente">Exigente</option>
+                            <option value="Élite / Trail Técnico">Élite / Trail Técnico</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Ubicación / Punto de encuentro *</label>
+                        <input type="text" id="ev-location" required placeholder="Ej. Valencia · Ciudad de las Artes" class="w-full px-4 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Etiqueta distancia *</label>
+                        <input type="text" id="ev-badge" required placeholder="Ej. 21K, Maratón, 15K Trail" class="w-full px-4 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div class="col-span-2 sm:col-span-1">
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Fecha *</label>
+                        <input type="date" id="ev-date" required class="w-full px-3 py-3 bg-surface border border-transparent rounded-2xl text-xs focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Hora *</label>
+                        <input type="time" id="ev-time" required value="08:30" class="w-full px-3 py-3 bg-surface border border-transparent rounded-2xl text-xs focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Km *</label>
+                        <input type="number" step="0.1" min="0.5" max="200" id="ev-km" required placeholder="21.1" class="w-full px-3 py-3 bg-surface border border-transparent rounded-2xl text-xs focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-ink mb-1.5">Desnivel</label>
+                        <input type="text" id="ev-elevation" placeholder="140m D+" class="w-full px-3 py-3 bg-surface border border-transparent rounded-2xl text-xs focus:outline-none focus:bg-white focus:border-ink">
+                    </div>
+                </div>
+
+                <div id="race-link-group">
+                    <label class="block text-xs font-semibold text-sky mb-1.5">Enlace web / inscripción oficial (URL)</label>
+                    <input type="url" id="ev-official-url" placeholder="https://www.valenciaciudaddelrunning.com/..." class="w-full px-4 py-3 bg-sky/5 border border-sky/20 rounded-2xl text-sm focus:outline-none focus:border-sky">
+                </div>
+
+                <div id="pace-field-group" class="hidden">
+                    <label class="block text-xs font-semibold text-leaf mb-1.5">Ritmos / grupos (separados por coma)</label>
+                    <input type="text" id="ev-paces" placeholder="Ej. 4:15/km, 4:45/km, 5:15/km" class="w-full px-4 py-3 bg-leaf/5 border border-leaf/25 rounded-2xl text-sm focus:outline-none focus:border-leaf">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-ink mb-1.5">Imagen de portada (URL opcional)</label>
+                    <input type="url" id="ev-image" placeholder="https://images.unsplash.com/..." class="w-full px-4 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-ink mb-1.5">Descripción y logística *</label>
+                    <textarea id="ev-description" rows="3" required placeholder="Recorrido, punto exacto de quedada, avituallamientos..." class="w-full px-4 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-2.5 pt-2">
+                    <button type="button" onclick="closeEventModal()" class="px-5 py-2.5 rounded-full text-sm font-semibold text-mute hover:bg-surface">Cancelar</button>
+                    <button type="submit" id="save-event-btn" class="px-6 py-3 rounded-full text-sm font-bold bg-ink text-white hover:bg-ink/85 transition-colors">Publicar en calendario</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ==================== MODAL: ADMIN ==================== -->
+    <div id="modal-admin" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-ink/50 backdrop-blur-sm">
+        <div class="bg-white rounded-4xl max-w-sm w-full p-6 sm:p-7 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-volt text-ink flex items-center justify-center">
+                        <i data-lucide="key-round" class="w-4 h-4"></i>
+                    </div>
+                    <h3 class="font-display font-extrabold text-2xl text-ink">Modo admin</h3>
+                </div>
+                <button onclick="closeAdminModal()" class="p-2 rounded-full bg-surface hover:bg-line text-ink">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <div id="admin-login-box" class="space-y-3">
+                <p class="text-xs text-mute leading-relaxed">Introduce la contraseña del club (<code class="px-1.5 py-0.5 bg-surface rounded text-ink font-mono">legacy2026</code>) para editar o eliminar eventos, moderar comentarios y restaurar datos.</p>
+                <input type="password" id="admin-password" onkeydown="if(event.key==='Enter') verifyAdmin()" placeholder="Contraseña..." class="w-full px-4 py-3 bg-surface border border-transparent rounded-2xl text-sm focus:outline-none focus:bg-white focus:border-ink">
+                <button onclick="verifyAdmin()" class="w-full py-3 bg-ink hover:bg-ink/85 text-white text-sm font-semibold rounded-full transition-colors">
+                    Activar modo admin
+                </button>
+            </div>
+
+            <div id="admin-active-box" class="hidden space-y-3">
+                <div class="p-4 rounded-2xl bg-volt/30 text-xs text-ink space-y-1">
+                    <p><strong>Modo administrador activo.</strong></p>
+                    <p class="text-ink/70">Ahora puedes editar o borrar cualquier evento y eliminar comentarios desde las fichas.</p>
+                </div>
+                <button onclick="resetDemoData(); closeAdminModal();" class="w-full py-3 bg-surface hover:bg-line text-ink text-sm font-semibold rounded-full transition-colors">
+                    Restaurar datos iniciales de ejemplo
+                </button>
+                <button onclick="logoutAdmin()" class="w-full py-3 border border-line hover:bg-surface text-mute hover:text-ink text-sm font-semibold rounded-full transition-colors">
+                    Salir del modo admin
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== LOGIC ==================== -->
+    <script>
+        // Reference Date: November 23, 2026
+        const TODAY_STR = '2026-11-23';
+        const STORAGE_KEY = 'the_legacy_events_2026_v2';
+        const VOTES_STORAGE_KEY = 'the_legacy_user_votes_v2';
+        const ADMIN_KEY = 'legacy2026';
+
+        const INITIAL_EVENTS = [
+            {
+                id: 'ev-1',
+                type: 'race',
+                title: 'Maratón Valencia Trinidad Alfonso',
+                location: 'Valencia · Ciudad de las Artes y las Ciencias',
+                date: '2026-12-06',
+                time: '08:15',
+                km: 42.2,
+                badge: 'Maratón',
+                elevation: '65m D+',
+                level: 'Exigente',
+                officialUrl: 'https://www.valenciaciudaddelrunning.com/maraton/maraton/',
+                votes: 28,
+                image: 'https://images.unsplash.com/photo-1530549387789-4c1017266635?auto=format&fit=crop&w=1200&q=80',
+                description: 'La gran cita del otoño para THE LEGACY. Circuito totalmente llano a nivel del mar ideal para buscar marca personal. Quedada oficial del club en el puente de Monteolivete 45 minutos antes de la salida para foto de equipo.',
+                paces: [],
+                participants: [
+                    { name: 'Carlos Mendoza', target: '2:54:00 · Cajón Sub 3h' },
+                    { name: 'Elena Rostova', target: '3:08:30' },
+                    { name: 'Javier Soler', target: '3:15:00' },
+                    { name: 'Marc Vidal', target: '2:49:15' },
+                    { name: 'Sofía Navarro', target: '3:22:00' },
+                    { name: 'Diego Alarcón', target: '2:59:50' }
+                ],
+                comments: [
+                    { id: 'c1', author: 'Carlos Mendoza', text: 'Reservada mesa para 12 el sábado a las 14:00 en Ruzafa para la carga de hidratos.', date: 'Hace 2 días' },
+                    { id: 'c2', author: 'Elena Rostova', text: '¡Qué ganas! Llevo bloque específico de 14 semanas y las piernas responden.', date: 'Ayer' }
+                ]
+            },
+            {
+                id: 'ev-2',
+                type: 'training',
+                title: 'Tirada Larga Pre-Maratón · Cauce del Turia',
+                location: 'Valencia · Puente de las Flores',
+                date: '2026-11-29',
+                time: '08:00',
+                km: 24,
+                badge: '24K',
+                elevation: '45m D+',
+                level: 'Intermedio',
+                officialUrl: '',
+                votes: 19,
+                image: 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80',
+                description: 'Última tirada de volumen controlado antes del tapering. Saldremos todos juntos los primeros 8 km en conversación y luego nos dividiremos en tres bloques de ritmo maratón con avituallamiento líquido en el km 14.',
+                paces: ['4:05/km', '4:30/km', '5:00/km'],
+                participants: [
+                    { name: 'Carlos Mendoza', target: '4:05/km' },
+                    { name: 'Lucía Ferrandis', target: '4:30/km' },
+                    { name: 'Pablo Serrano', target: '4:30/km' },
+                    { name: 'Marta Gil', target: '5:00/km' },
+                    { name: 'Hugo Peris', target: '4:05/km' }
+                ],
+                comments: [
+                    { id: 'c3', author: 'Pablo Serrano', text: 'Llevo geles isotónicos de sobra por si alguien quiere probar antes de carrera.', date: 'Hace 5 horas' }
+                ]
+            },
+            {
+                id: 'ev-3',
+                type: 'training',
+                title: 'Series en Pista · Test 6x1000m',
+                location: 'Estadio del Turia · Tramo III (Valencia)',
+                date: '2026-11-23',
+                time: '19:30',
+                km: 12,
+                badge: '12K Pista',
+                elevation: '0m D+',
+                level: 'Todos los niveles',
+                officialUrl: '',
+                votes: 14,
+                image: 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=1200&q=80',
+                description: 'Sesión nocturna de calidad bajo los focos. 3 km de calentamiento progresivo, técnica de carrera, 6x1000m con 90 segundos de recuperación activa al trote y vuelta a la calma.',
+                paces: ['3:35/km', '3:55/km', '4:20/km'],
+                participants: [
+                    { name: 'Marc Vidal', target: '3:35/km' },
+                    { name: 'Elena Rostova', target: '3:55/km' },
+                    { name: 'Andrés Puig', target: '4:20/km' },
+                    { name: 'Clara Montaner', target: '3:55/km' }
+                ],
+                comments: []
+            },
+            {
+                id: 'ev-4',
+                type: 'race',
+                title: 'San Silvestre Vallecana Internacional',
+                location: 'Madrid · Concha Espina / Vallecas',
+                date: '2026-12-31',
+                time: '17:30',
+                km: 10,
+                badge: '10K',
+                elevation: '85m D-',
+                level: 'Todos los niveles',
+                officialUrl: 'https://www.sansilvestrevallecana.com/',
+                votes: 34,
+                image: 'https://images.unsplash.com/photo-1513593771513-7b58b6c4af38?auto=format&fit=crop&w=1200&q=80',
+                description: 'Despedimos 2026 volando por las calles de Madrid. Expedición oficial de THE LEGACY con cena de fin de año posterior en el barrio de Salamanca.',
+                paces: [],
+                participants: [
+                    { name: 'Diego Alarcón', target: '34:40 · Marca acreditada' },
+                    { name: 'Sofía Navarro', target: '38:20' },
+                    { name: 'Javier Soler', target: '36:10' },
+                    { name: 'Lucía Ferrandis', target: '39:50' },
+                    { name: 'Hugo Peris', target: '33:55' },
+                    { name: 'Marta Gil', target: '42:15' },
+                    { name: 'Andrés Puig', target: '41:00' }
+                ],
+                comments: [
+                    { id: 'c4', author: 'Diego Alarcón', text: 'Tenemos 4 plazas libres en el coche que sale el 31 por la mañana.', date: 'Hace 3 días' }
+                ]
+            },
+            {
+                id: 'ev-5',
+                type: 'race',
+                title: 'Gran Trail Aneto-Posets · Vuelta al Pico Cerler',
+                location: 'Benasque · Pirineos (Huesca)',
+                date: '2027-07-18',
+                time: '07:00',
+                km: 26,
+                badge: '26K Trail',
+                elevation: '1.250m D+',
+                level: 'Élite / Trail Técnico',
+                officialUrl: 'https://www.trail-aneto.com/',
+                votes: 22,
+                image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=1200&q=80',
+                description: 'Expedición veraniega del club al corazón del Pirineo aragonés. Ascensión técnica por senderos alpinos con vistas directas al glaciar del Aneto y fiesta final en Benasque.',
+                paces: [],
+                participants: [
+                    { name: 'Hugo Peris', target: '2:55:00' },
+                    { name: 'Clara Montaner', target: '3:20:00' },
+                    { name: 'Pablo Serrano', target: '3:12:00' }
+                ],
+                comments: []
+            },
+            {
+                id: 'ev-6',
+                type: 'race',
+                title: 'Medio Maratón Valencia Trinidad Alfonso',
+                location: 'Valencia · Avenida Tarongers',
+                date: '2026-10-25',
+                time: '08:25',
+                km: 21.1,
+                badge: '21K',
+                elevation: '38m D+',
+                level: 'Intermedio',
+                officialUrl: 'https://www.valenciaciudaddelrunning.com/medio/medio-maraton/',
+                votes: 31,
+                image: 'https://images.unsplash.com/photo-1502904550040-7534597429ae?auto=format&fit=crop&w=1200&q=80',
+                description: 'Edición histórica con 7 mejores marcas personales dentro del club. Mañana fresca y viento nulo.',
+                paces: [],
+                participants: [
+                    { name: 'Carlos Mendoza', target: '1:21:14' },
+                    { name: 'Elena Rostova', target: '1:28:40' },
+                    { name: 'Marc Vidal', target: '1:18:52' },
+                    { name: 'Sofía Navarro', target: '1:33:10' },
+                    { name: 'Javier Soler', target: '1:25:03' }
+                ],
+                comments: [
+                    { id: 'c5', author: 'Marc Vidal', text: '¡Vaya mañana inolvidable! Gracias a todos por animar en el km 19.', date: '26 Oct 2026' }
+                ]
+            }
+        ];
+
+        // State
+        let state = {
+            events: [],
+            userVotes: {},
+            search: '',
+            type: 'all',
+            status: 'upcoming',
+            maxKm: 100,
+            sortBy: 'date',
+            selectedEventId: null,
+            isAdmin: false
+        };
+
+        // Helpers: escape user-provided text and validate URLs
+        function esc(str) {
+            return String(str ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+        function safeUrl(url) {
+            return /^https?:\/\//i.test(url || '') ? esc(url) : '';
+        }
+
+        // Init
+        window.addEventListener('DOMContentLoaded', () => {
+            loadEvents();
+            bindSearchInput();
+            updateSegmentedPill();
+            renderApp();
+            window.addEventListener('resize', updateSegmentedPill);
+        });
+
+        function loadEvents() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    state.events = JSON.parse(saved);
+                } else {
+                    state.events = JSON.parse(JSON.stringify(INITIAL_EVENTS));
+                    saveEvents();
+                }
+                const savedVotes = localStorage.getItem(VOTES_STORAGE_KEY);
+                if (savedVotes) state.userVotes = JSON.parse(savedVotes);
+            } catch (e) {
+                state.events = JSON.parse(JSON.stringify(INITIAL_EVENTS));
+            }
+        }
+
+        function saveEvents() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state.events));
+                localStorage.setItem(VOTES_STORAGE_KEY, JSON.stringify(state.userVotes));
+            } catch (e) {
+                console.warn('No se pudo guardar en localStorage');
+            }
+        }
+
+        function resetDemoData() {
+            state.events = JSON.parse(JSON.stringify(INITIAL_EVENTS));
+            state.userVotes = {};
+            saveEvents();
+            renderApp();
+            showToast('Calendario restaurado con los datos de 2026/2027.');
+        }
+
+        function exportData() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.events, null, 2));
+            const a = document.createElement('a');
+            a.setAttribute("href", dataStr);
+            a.setAttribute("download", `the-legacy-calendario-${TODAY_STR}.json`);
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            showToast('Calendario exportado en formato JSON.');
+        }
+
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (Array.isArray(imported)) {
+                        state.events = imported;
+                        saveEvents();
+                        renderApp();
+                        showToast('Datos importados correctamente.');
+                    } else {
+                        showToast('El archivo JSON no tiene un formato válido.', 'warning');
+                    }
+                } catch (err) {
+                    showToast('Error al leer el archivo JSON.', 'warning');
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Dates
+        function parseDate(dateStr) {
+            const [y, m, d] = dateStr.split('-').map(Number);
+            return new Date(y, m - 1, d);
+        }
+
+        function getDaysDiff(dateStr) {
+            return Math.round((parseDate(dateStr) - parseDate(TODAY_STR)) / (1000 * 60 * 60 * 24));
+        }
+
+        function formatEditorialDate(dateStr) {
+            const months = ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'];
+            const fullMonths = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+            const weekdays = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
+            const d = parseDate(dateStr);
+            return {
+                day: String(d.getDate()).padStart(2, '0'),
+                monthShort: months[d.getMonth()],
+                monthFull: fullMonths[d.getMonth()],
+                weekday: weekdays[d.getDay()],
+                year: d.getFullYear(),
+                fullText: `${d.getDate()} de ${fullMonths[d.getMonth()]}, ${d.getFullYear()}`
+            };
+        }
+
+        function getCountdownBadge(event) {
+            const diff = getDaysDiff(event.date);
+            const isPopular = (event.votes || 0) >= 25 || event.participants.length >= 6;
+
+            if (diff < 0) return { text: 'Completada', style: 'bg-surface text-mute' };
+            if (diff === 0) return { text: 'Hoy', style: 'bg-flame text-white animate-pulse' };
+            if (isPopular && diff <= 45) return { text: `🔥 En ${diff} días`, style: 'bg-flame/10 text-flame' };
+            if (diff === 1) return { text: 'Mañana', style: 'bg-volt text-ink' };
+            return { text: `En ${diff} días`, style: 'bg-volt text-ink' };
+        }
+
+        function getInitials(name) {
+            return name.trim().split(/\s+/).slice(0, 2).map(n => n[0]?.toUpperCase() || '').join('');
+        }
+
+        // Filtering
+        function getFilteredEvents() {
+            return state.events
+                .filter(ev => {
+                    if (state.search) {
+                        const q = state.search.toLowerCase();
+                        const hit = ev.title.toLowerCase().includes(q)
+                            || ev.location.toLowerCase().includes(q)
+                            || (ev.description || '').toLowerCase().includes(q)
+                            || (ev.badge || '').toLowerCase().includes(q);
+                        if (!hit) return false;
+                    }
+                    if (state.type !== 'all' && ev.type !== state.type) return false;
+                    if (state.maxKm < 100 && ev.km > state.maxKm) return false;
+
+                    const diff = getDaysDiff(ev.date);
+                    if (state.status === 'upcoming' && diff < 0) return false;
+                    if (state.status === 'past' && diff >= 0) return false;
+                    if (state.status === 'top' && (ev.votes || 0) < 15 && ev.participants.length < 5) return false;
+                    return true;
+                })
+                .sort((a, b) => {
+                    if (state.status === 'top' || state.sortBy === 'votes') {
+                        return ((b.votes || 0) + b.participants.length) - ((a.votes || 0) + a.participants.length);
+                    }
+                    if (state.sortBy === 'distance') return b.km - a.km;
+                    if (state.status === 'past') return parseDate(b.date) - parseDate(a.date);
+                    return parseDate(a.date) - parseDate(b.date);
+                });
+        }
+
+        // Filter handlers
+        function bindSearchInput() {
+            const input = document.getElementById('search-input');
+            const clearBtn = document.getElementById('clear-search');
+            input.addEventListener('input', (e) => {
+                state.search = e.target.value.trim();
+                clearBtn.classList.toggle('hidden', !state.search);
+                if (state.selectedEventId) navigateTo('home');
+                renderHome();
+            });
+        }
+
+        function clearSearch() {
+            document.getElementById('search-input').value = '';
+            state.search = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            renderHome();
+        }
+
+        function setFilterType(type) {
+            state.type = type;
+            document.querySelectorAll('#type-segmented button').forEach(b => {
+                if (b.dataset.type === type) {
+                    b.classList.remove('text-mute', 'font-medium');
+                    b.classList.add('text-white', 'font-semibold');
+                } else {
+                    b.classList.remove('text-white', 'font-semibold');
+                    b.classList.add('text-mute', 'font-medium');
+                }
+            });
+            updateSegmentedPill();
+            renderHome();
+        }
+
+        function updateSegmentedPill() {
+            const activeBtn = document.querySelector(`#type-segmented button[data-type="${state.type}"]`);
+            const pill = document.getElementById('segment-indicator');
+            if (!activeBtn || !pill) return;
+            pill.style.width = `${activeBtn.offsetWidth}px`;
+            pill.style.transform = `translateX(${activeBtn.offsetLeft - 4}px)`;
+        }
+
+        function setFilterStatus(status) {
+            state.status = status;
+            document.querySelectorAll('.status-tab').forEach(tab => {
+                tab.classList.remove('bg-volt', 'text-ink', 'font-semibold');
+                tab.classList.add('text-mute', 'font-medium', 'hover:bg-white');
+            });
+            const activeTab = document.getElementById(`status-${status}`);
+            if (activeTab) {
+                activeTab.classList.remove('text-mute', 'font-medium', 'hover:bg-white');
+                activeTab.classList.add('bg-volt', 'text-ink', 'font-semibold');
+            }
+            renderHome();
+        }
+
+        function setFilterDistance(val) {
+            state.maxKm = Number(val);
+            const label = document.getElementById('distance-label');
+            if (state.maxKm >= 100) label.textContent = 'Todas';
+            else if (state.maxKm === 0) label.textContent = '0 km';
+            else label.textContent = `${val} km`;
+            renderHome();
+        }
+
+        function setSortBy(val) {
+            state.sortBy = val;
+            renderHome();
+        }
+
+        function resetAllFilters() {
+            state.search = '';
+            state.type = 'all';
+            state.status = 'upcoming';
+            state.maxKm = 100;
+            state.sortBy = 'date';
+
+            document.getElementById('search-input').value = '';
+            document.getElementById('clear-search').classList.add('hidden');
+            document.getElementById('distance-slider').value = 100;
+            document.getElementById('distance-label').textContent = 'Todas';
+            document.getElementById('sort-select').value = 'date';
+
+            setFilterType('all');
+            setFilterStatus('upcoming');
+        }
+
+        // Votes
+        function toggleVote(e, eventId) {
+            if (e) e.stopPropagation();
+            const ev = state.events.find(item => item.id === eventId);
+            if (!ev) return;
+
+            if (state.userVotes[eventId]) {
+                delete state.userVotes[eventId];
+                ev.votes = Math.max(0, (ev.votes || 1) - 1);
+            } else {
+                state.userVotes[eventId] = true;
+                ev.votes = (ev.votes || 0) + 1;
+                showToast(`Has votado por "${ev.title}".`);
+            }
+
+            saveEvents();
+            if (state.selectedEventId === eventId) renderDetail(eventId);
+            else renderHome();
+        }
+
+        // Render dispatcher
+        function renderApp() {
+            updateHeroStats();
+            if (state.selectedEventId) renderDetail(state.selectedEventId);
+            else renderHome();
+            lucide.createIcons();
+        }
+
+        function updateHeroStats() {
+            const upcoming = state.events.filter(e => getDaysDiff(e.date) >= 0);
+            const uniqueMembers = new Set();
+            state.events.forEach(e => e.participants.forEach(p => uniqueMembers.add(p.name.toLowerCase())));
+            document.getElementById('stat-upcoming').textContent = upcoming.length;
+            document.getElementById('stat-runners').textContent = uniqueMembers.size;
+
+            // Floating "next event" card in the hero
+            const card = document.getElementById('hero-next');
+            if (!card) return;
+            const next = [...upcoming].sort((a, b) => parseDate(a.date) - parseDate(b.date))[0];
+            if (!next) {
+                card.classList.add('hidden');
+                return;
+            }
+            const d = formatEditorialDate(next.date);
+            const cd = getCountdownBadge(next);
+            card.classList.remove('hidden');
+            card.onclick = () => navigateTo('detail', next.id);
+            card.innerHTML = `
+                <div class="flex items-center justify-between gap-2 mb-2">
+                    <span class="text-[11px] font-bold uppercase tracking-[0.14em] text-mute">Lo siguiente</span>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold ${cd.style}">${cd.text}</span>
+                </div>
+                <div class="font-display font-bold text-lg leading-tight text-ink line-clamp-2">${esc(next.title)}</div>
+                <div class="flex items-center gap-3 mt-2 text-xs text-mute">
+                    <span class="inline-flex items-center gap-1"><i data-lucide="calendar" class="w-3.5 h-3.5"></i>${d.weekday}, ${d.day} ${d.monthShort}</span>
+                    <span class="inline-flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5"></i>${esc(next.time)}h</span>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Home grid
+        function renderHome() {
+            const filtered = getFilteredEvents();
+            const grid = document.getElementById('events-grid');
+            const emptyState = document.getElementById('empty-state');
+
+            const titles = {
+                upcoming: 'Próximas convocatorias',
+                past: 'Crónicas y resultados',
+                top: 'Las más votadas'
+            };
+            document.getElementById('list-heading').textContent = titles[state.status] || 'Calendario';
+            document.getElementById('results-count').textContent = filtered.length;
+
+            const hasActiveFilters = state.search !== '' || state.type !== 'all' || state.maxKm < 100 || state.sortBy !== 'date';
+            document.getElementById('reset-filters-btn').classList.toggle('hidden', !hasActiveFilters);
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                lucide.createIcons();
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            grid.innerHTML = filtered.map(ev => {
+                const d = formatEditorialDate(ev.date);
+                const countdown = getCountdownBadge(ev);
+                const isTraining = ev.type === 'training';
+                const hasVoted = !!state.userVotes[ev.id];
+                const fallback = 'https://placehold.co/1200x800/F5F5F3/0B0B0C?text=THE+LEGACY';
+                const img = safeUrl(ev.image) || fallback;
+
+                const typeTag = isTraining
+                    ? `<span class="px-3 py-1 rounded-full text-[11px] font-bold bg-leaf text-white">Entreno</span>`
+                    : `<span class="px-3 py-1 rounded-full text-[11px] font-bold bg-sky text-white">Carrera</span>`;
+
+                const pacesHtml = (isTraining && ev.paces && ev.paces.length > 0)
+                    ? `<div class="flex flex-wrap items-center gap-1.5">
+                        ${ev.paces.map(p => `<span class="px-2.5 py-0.5 rounded-full bg-leaf/10 text-leaf text-[11px] font-bold">${esc(p)}</span>`).join('')}
+                       </div>`
+                    : '';
+
+                const avatars = ev.participants.slice(0, 3).map(p => `
+                    <div class="w-7 h-7 rounded-full bg-volt text-ink border-2 border-white flex items-center justify-center text-[9px] font-bold" title="${esc(p.name)}">
+                        ${esc(getInitials(p.name))}
+                    </div>
+                `).join('');
+
+                return `
+                <article
+                    onclick="navigateTo('detail', '${ev.id}')"
+                    class="event-card cursor-pointer bg-white border border-line rounded-4xl overflow-hidden flex flex-col"
+                >
+                    <!-- Cover -->
+                    <div class="relative h-48 overflow-hidden bg-surface">
+                        <img src="${img}" onerror="this.src='${fallback}'" alt="${esc(ev.title)}" class="cover absolute inset-0 w-full h-full object-cover" loading="lazy">
+                        <div class="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent"></div>
+
+                        <div class="absolute top-3 left-3 flex items-center gap-1.5">
+                            ${typeTag}
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-bold ${countdown.style}">${countdown.text}</span>
+                        </div>
+
+                        <!-- Date chip -->
+                        <div class="absolute bottom-3 left-3 bg-white rounded-2xl px-3 py-1.5 text-center leading-none shadow-md">
+                            <div class="font-display font-extrabold text-xl text-ink">${d.day}</div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-mute mt-0.5">${d.monthShort}</div>
+                        </div>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="p-5 flex-1 flex flex-col gap-3">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.14em] text-mute">${esc(ev.level || 'Todos los niveles')}</div>
+                        <h3 class="font-display font-bold text-[22px] leading-tight text-ink line-clamp-2">${esc(ev.title)}</h3>
+
+                        <div class="space-y-1 text-[13px] text-mute">
+                            <div class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-3.5 h-3.5 shrink-0"></i>${d.weekday}, ${d.day} ${d.monthShort} ${d.year} · ${esc(ev.time)}h</div>
+                            <div class="flex items-center gap-1.5 min-w-0"><i data-lucide="map-pin" class="w-3.5 h-3.5 shrink-0"></i><span class="truncate">${esc(ev.location)}</span></div>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-1.5">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-surface text-ink">${esc(ev.badge)} · ${ev.km} km</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-medium bg-surface text-mute">${esc(ev.elevation || 'Llano')}</span>
+                        </div>
+
+                        ${pacesHtml}
+
+                        <!-- Footer -->
+                        <div class="mt-auto pt-4 flex items-center justify-between gap-2">
+                            <div class="flex items-center gap-2">
+                                <div class="flex -space-x-2">${avatars}</div>
+                                <span class="text-xs font-bold text-ink">${ev.participants.length} <span class="font-normal text-mute">inscritos</span></span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button
+                                    type="button"
+                                    onclick="toggleVote(event, '${ev.id}')"
+                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${hasVoted ? 'bg-flame/10 text-flame' : 'bg-surface text-mute hover:text-ink'}"
+                                    title="Votar evento"
+                                >
+                                    <i data-lucide="heart" class="w-3.5 h-3.5 ${hasVoted ? 'fill-flame text-flame' : ''}"></i>
+                                    <span>${ev.votes || 0}</span>
+                                </button>
+                                <span class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold bg-ink text-white">Unirse</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                `;
+            }).join('');
+
+            lucide.createIcons();
+        }
+
+        // Navigation
+        function navigateTo(view, eventId = null) {
+            const homeEl = document.getElementById('view-home');
+            const detailEl = document.getElementById('view-detail');
+
+            if (view === 'detail' && eventId) {
+                state.selectedEventId = eventId;
+                homeEl.classList.add('hidden');
+                detailEl.classList.remove('hidden');
+                renderDetail(eventId);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                state.selectedEventId = null;
+                detailEl.classList.add('hidden');
+                homeEl.classList.remove('hidden');
+                renderHome();
+                updateSegmentedPill();
+            }
+            lucide.createIcons();
+        }
+
+        // Detail view
+        function renderDetail(eventId) {
+            const ev = state.events.find(e => e.id === eventId);
+            if (!ev) return navigateTo('home');
+
+            const container = document.getElementById('view-detail');
+            const d = formatEditorialDate(ev.date);
+            const countdown = getCountdownBadge(ev);
+            const isTraining = ev.type === 'training';
+            const hasVoted = !!state.userVotes[ev.id];
+            const fallbackHero = 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1400&q=80';
+            const img = safeUrl(ev.image) || fallbackHero;
+            const officialUrl = safeUrl(ev.officialUrl);
+
+            const adminControls = state.isAdmin ? `
+                <div class="flex items-center gap-2">
+                    <button onclick="openEventModal('${ev.id}')" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-surface hover:bg-line text-ink text-sm font-semibold transition-colors">
+                        <i data-lucide="pencil" class="w-4 h-4"></i>
+                        Editar
+                    </button>
+                    <button onclick="deleteEvent('${ev.id}')" class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-flame text-white text-sm font-semibold hover:bg-flame/90 transition-colors">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        Eliminar
+                    </button>
+                </div>
+            ` : '';
+
+            const officialLinkBanner = (!isTraining && officialUrl) ? `
+                <div class="bg-sky/5 border border-sky/20 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-2xl bg-sky text-white flex items-center justify-center shrink-0">
+                            <i data-lucide="external-link" class="w-4 h-4"></i>
+                        </div>
+                        <div>
+                            <div class="font-bold text-sm">Inscripción y dorsal oficial</div>
+                            <div class="text-xs text-mute">Gestiona tu dorsal en la web del organizador y apúntate aquí en la lista del club.</div>
+                        </div>
+                    </div>
+                    <a href="${officialUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-sky hover:bg-sky/90 text-white text-sm font-bold transition-colors shrink-0">
+                        Web oficial
+                        <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+            ` : '';
+
+            const pacesSection = (isTraining && ev.paces && ev.paces.length > 0) ? `
+                <div class="bg-leaf/5 border border-leaf/20 rounded-3xl p-5 flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex items-center gap-2 text-leaf font-bold text-xs uppercase tracking-wider">
+                        <i data-lucide="gauge" class="w-4 h-4"></i>
+                        Grupos de ritmo
+                    </div>
+                    <div class="flex flex-wrap gap-2">
+                        ${ev.paces.map(p => `<span class="px-3.5 py-1.5 rounded-full bg-white border border-leaf/25 text-leaf text-xs font-bold">${esc(p)}</span>`).join('')}
+                    </div>
+                </div>
+            ` : '';
+
+            const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.location)}`;
+            const accentBg = isTraining ? 'bg-leaf hover:bg-leaf/90' : 'bg-ink hover:bg-ink/85';
+
+            container.innerHTML = `
+                <!-- Top bar -->
+                <div class="flex flex-wrap items-center justify-between gap-3">
+                    <button onclick="navigateTo('home')" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-surface hover:bg-line text-sm font-semibold text-ink transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        Calendario
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button
+                            onclick="toggleVote(event, '${ev.id}')"
+                            class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-colors ${hasVoted ? 'bg-flame/10 text-flame' : 'bg-surface text-ink hover:bg-line'}"
+                        >
+                            <i data-lucide="heart" class="w-4 h-4 ${hasVoted ? 'fill-flame text-flame' : ''}"></i>
+                            <span>${hasVoted ? 'Votado' : 'Votar'} (${ev.votes || 0})</span>
+                        </button>
+                        ${adminControls}
+                    </div>
+                </div>
+
+                <!-- Hero -->
+                <div class="relative rounded-4xl overflow-hidden bg-ink min-h-[280px] sm:min-h-[380px] flex items-end p-6 sm:p-10">
+                    <img
+                        src="${img}"
+                        onerror="this.src='${fallbackHero}'"
+                        alt="${esc(ev.title)}"
+                        class="absolute inset-0 w-full h-full object-cover"
+                    >
+                    <div class="absolute inset-0 bg-gradient-to-t from-ink/85 via-ink/30 to-transparent"></div>
+
+                    <div class="relative z-10 w-full space-y-3">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="px-3.5 py-1.5 rounded-full text-xs font-bold ${isTraining ? 'bg-leaf text-white' : 'bg-sky text-white'}">
+                                ${isTraining ? 'Entrenamiento' : 'Carrera oficial'}
+                            </span>
+                            <span class="px-3.5 py-1.5 rounded-full text-xs font-bold ${countdown.style}">${countdown.text}</span>
+                            ${ev.level ? `<span class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-white/20 backdrop-blur text-white">${esc(ev.level)}</span>` : ''}
+                        </div>
+                        <h1 class="font-display font-extrabold text-3xl sm:text-5xl text-white leading-[1.02] max-w-3xl">
+                            ${esc(ev.title)}
+                        </h1>
+                        <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-white/90">
+                            <span class="inline-flex items-center gap-1.5">
+                                <i data-lucide="map-pin" class="w-4 h-4 text-volt"></i>
+                                ${esc(ev.location)}
+                            </span>
+                            <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs underline underline-offset-4 text-white/80 hover:text-white">
+                                Ver en el mapa
+                                <i data-lucide="external-link" class="w-3 h-3"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                    <div class="bg-surface rounded-3xl p-5">
+                        <div class="flex items-center gap-2 text-xs text-mute font-medium mb-2">
+                            <i data-lucide="calendar" class="w-4 h-4 text-ink"></i> Fecha
+                        </div>
+                        <div class="font-display font-extrabold text-2xl sm:text-[28px] text-ink leading-tight">${d.day} ${d.monthShort} ${d.year}</div>
+                    </div>
+                    <div class="bg-surface rounded-3xl p-5">
+                        <div class="flex items-center gap-2 text-xs text-mute font-medium mb-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-ink"></i> Hora de quedada
+                        </div>
+                        <div class="font-display font-extrabold text-2xl sm:text-[28px] text-ink leading-tight">${esc(ev.time)} h</div>
+                    </div>
+                    <div class="bg-surface rounded-3xl p-5">
+                        <div class="flex items-center gap-2 text-xs text-mute font-medium mb-2">
+                            <i data-lucide="route" class="w-4 h-4 text-ink"></i> Distancia
+                        </div>
+                        <div class="font-display font-extrabold text-2xl sm:text-[28px] text-ink leading-tight">${ev.km} km <span class="font-sans text-xs font-semibold text-mute">(${esc(ev.badge)})</span></div>
+                    </div>
+                    <div class="bg-volt rounded-3xl p-5">
+                        <div class="flex items-center gap-2 text-xs text-ink/70 font-medium mb-2">
+                            <i data-lucide="mountain" class="w-4 h-4 text-ink"></i> Desnivel
+                        </div>
+                        <div class="font-display font-extrabold text-2xl sm:text-[28px] text-ink leading-tight">${esc(ev.elevation || 'Llano')}</div>
+                    </div>
+                </div>
+
+                ${officialLinkBanner}
+                ${pacesSection}
+
+                <!-- Body -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                    <div class="lg:col-span-2 space-y-6">
+                        <div class="border border-line rounded-4xl p-6 sm:p-7 space-y-3">
+                            <h2 class="font-display font-extrabold text-2xl text-ink">Nota técnica y logística</h2>
+                            <p class="text-sm sm:text-base text-mute leading-relaxed">
+                                ${esc(ev.description) || 'Sin notas adicionales para esta convocatoria.'}
+                            </p>
+                        </div>
+
+                        <div class="border border-line rounded-4xl p-6 sm:p-7 space-y-5">
+                            <div class="flex items-center justify-between">
+                                <h2 class="font-display font-extrabold text-2xl text-ink">Bitácora del equipo (${ev.comments.length})</h2>
+                                <span class="hidden sm:inline text-xs text-mute">Viajes, dorsales y quedadas</span>
+                            </div>
+
+                            <form onsubmit="handleAddComment(event, '${ev.id}')" class="space-y-3 bg-surface p-4 rounded-3xl">
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                                    <input type="text" id="comment-author" required placeholder="Tu nombre..." class="px-4 py-2.5 bg-white border border-transparent rounded-2xl text-sm focus:outline-none focus:border-ink">
+                                    <input type="text" id="comment-text" required placeholder="Comparte coche, hotel o sensaciones..." class="sm:col-span-2 px-4 py-2.5 bg-white border border-transparent rounded-2xl text-sm focus:outline-none focus:border-ink">
+                                </div>
+                                <div class="flex justify-end">
+                                    <button type="submit" class="px-5 py-2 bg-ink hover:bg-ink/85 text-white text-sm font-semibold rounded-full transition-colors">
+                                        Publicar nota
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="space-y-3">
+                                ${ev.comments.length === 0
+                                    ? `<p class="text-sm text-mute py-2">Aún no hay comentarios. Sé el primero en coordinar logística con el grupo.</p>`
+                                    : ev.comments.map(c => `
+                                        <div class="p-4 rounded-3xl bg-surface/70 flex items-start justify-between gap-3">
+                                            <div class="flex items-start gap-3">
+                                                <div class="w-9 h-9 rounded-full bg-volt text-ink flex items-center justify-center text-xs font-bold shrink-0">
+                                                    ${esc(getInitials(c.author))}
+                                                </div>
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <span class="text-sm font-bold text-ink">${esc(c.author)}</span>
+                                                        <span class="text-[11px] text-mute">· ${esc(c.date)}</span>
+                                                    </div>
+                                                    <p class="text-sm text-ink/90 mt-1 leading-relaxed">${esc(c.text)}</p>
+                                                </div>
+                                            </div>
+                                            ${state.isAdmin ? `
+                                                <button onclick="deleteComment('${ev.id}', '${c.id}')" class="text-mute hover:text-flame p-1" title="Eliminar comentario">
+                                                    <i data-lucide="x" class="w-4 h-4"></i>
+                                                </button>
+                                            ` : ''}
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="bg-surface rounded-4xl p-6 space-y-4">
+                            <div>
+                                <span class="text-[11px] font-bold uppercase tracking-[0.16em] ${isTraining ? 'text-leaf' : 'text-sky'}">Lista oficial</span>
+                                <h2 class="font-display font-extrabold text-2xl text-ink">Apuntarse a la salida</h2>
+                            </div>
+                            <form onsubmit="handleJoinEvent(event, '${ev.id}')" class="space-y-3">
+                                <div>
+                                    <label class="block text-xs font-semibold text-ink mb-1.5">Nombre y apellido *</label>
+                                    <input type="text" id="join-name" required placeholder="Ej. Laura Martínez" class="w-full px-4 py-3 bg-white border border-transparent rounded-2xl text-sm focus:outline-none focus:border-ink">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-ink mb-1.5">${isTraining ? 'Grupo de ritmo / nota' : 'Dorsal / objetivo / nota'}</label>
+                                    <input type="text" id="join-target" placeholder="${isTraining ? 'Ej. 4:30/km · Voy en bici' : 'Ej. Dorsal #1420 · Sub 3:10'}" class="w-full px-4 py-3 bg-white border border-transparent rounded-2xl text-sm focus:outline-none focus:border-ink">
+                                </div>
+                                <button type="submit" class="w-full py-3.5 ${accentBg} text-white text-sm font-bold rounded-full transition-colors">
+                                    Confirmar asistencia
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="border border-line rounded-4xl p-6 space-y-4">
+                            <div class="flex items-center justify-between pb-1">
+                                <h3 class="font-display font-extrabold text-2xl text-ink">Corredores</h3>
+                                <span class="px-3 py-1 rounded-full bg-volt text-xs font-bold text-ink">${ev.participants.length}</span>
+                            </div>
+
+                            <div class="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+                                ${ev.participants.length === 0
+                                    ? `<p class="text-sm text-mute py-2">Nadie inscrito todavía. ¡Estrena la lista!</p>`
+                                    : ev.participants.map((p, idx) => `
+                                        <div class="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-surface/70">
+                                            <div class="flex items-center gap-2.5 min-w-0">
+                                                <div class="w-9 h-9 rounded-full ${isTraining ? 'bg-leaf/15 text-leaf' : 'bg-sky/10 text-sky'} font-bold text-xs flex items-center justify-center shrink-0">
+                                                    ${esc(getInitials(p.name))}
+                                                </div>
+                                                <div class="min-w-0">
+                                                    <div class="text-sm font-semibold text-ink truncate">${esc(p.name)}</div>
+                                                    ${p.target ? `<div class="text-[11px] text-mute">${esc(p.target)}</div>` : ''}
+                                                </div>
+                                            </div>
+                                            <button
+                                                onclick="removeParticipant('${ev.id}', ${idx})"
+                                                class="text-[11px] font-semibold text-mute hover:text-flame px-2.5 py-1 rounded-full hover:bg-white transition-colors shrink-0"
+                                                title="Darse de baja"
+                                            >
+                                                Baja
+                                            </button>
+                                        </div>
+                                    `).join('')
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
+        // Event actions
+        function handleJoinEvent(e, eventId) {
+            e.preventDefault();
+            const name = document.getElementById('join-name').value.trim();
+            const target = document.getElementById('join-target').value.trim();
+            if (!name) return;
+
+            const ev = state.events.find(item => item.id === eventId);
+            if (!ev) return;
+
+            if (ev.participants.some(p => p.name.toLowerCase() === name.toLowerCase())) {
+                showToast('Ya figuras en la lista de inscritos de esta salida.', 'warning');
+                return;
+            }
+
+            ev.participants.push({ name, target: target || 'Por definir' });
+            saveEvents();
+            updateHeroStats();
+            renderDetail(eventId);
+            showToast(`¡Inscrito! Nos vemos en ${ev.title}.`);
+        }
+
+        function removeParticipant(eventId, index) {
+            const ev = state.events.find(item => item.id === eventId);
+            if (!ev) return;
+            const removed = ev.participants.splice(index, 1);
+            saveEvents();
+            updateHeroStats();
+            renderDetail(eventId);
+            showToast(`Se ha dado de baja a ${removed[0]?.name || 'el corredor'}.`);
+        }
+
+        function handleAddComment(e, eventId) {
+            e.preventDefault();
+            const author = document.getElementById('comment-author').value.trim();
+            const text = document.getElementById('comment-text').value.trim();
+            if (!author || !text) return;
+
+            const ev = state.events.find(item => item.id === eventId);
+            if (!ev) return;
+
+            ev.comments.unshift({ id: 'c-' + Date.now(), author, text, date: 'Ahora mismo' });
+            saveEvents();
+            renderDetail(eventId);
+            showToast('Nota publicada en la bitácora.');
+        }
+
+        function deleteComment(eventId, commentId) {
+            if (!state.isAdmin) return;
+            const ev = state.events.find(item => item.id === eventId);
+            if (!ev) return;
+            ev.comments = ev.comments.filter(c => c.id !== commentId);
+            saveEvents();
+            renderDetail(eventId);
+            showToast('Comentario eliminado.');
+        }
+
+        function deleteEvent(eventId) {
+            if (!state.isAdmin) return;
+            state.events = state.events.filter(item => item.id !== eventId);
+            delete state.userVotes[eventId];
+            saveEvents();
+            updateHeroStats();
+            navigateTo('home');
+            showToast('Convocatoria eliminada del calendario.');
+        }
+
+        // Modal: new / edit event
+        function openEventModal(editId = null) {
+            document.getElementById('event-form').reset();
+            const titleHeader = document.getElementById('modal-event-title');
+            const submitBtn = document.getElementById('save-event-btn');
+
+            if (editId) {
+                const ev = state.events.find(e => e.id === editId);
+                if (!ev) return;
+                document.getElementById('ev-id').value = ev.id;
+                document.querySelector(`input[name="ev-type"][value="${ev.type}"]`).checked = true;
+                document.getElementById('ev-title').value = ev.title;
+                document.getElementById('ev-level').value = ev.level || 'Todos los niveles';
+                document.getElementById('ev-location').value = ev.location;
+                document.getElementById('ev-badge').value = ev.badge;
+                document.getElementById('ev-date').value = ev.date;
+                document.getElementById('ev-time').value = ev.time;
+                document.getElementById('ev-km').value = ev.km;
+                document.getElementById('ev-elevation').value = ev.elevation || '';
+                document.getElementById('ev-official-url').value = ev.officialUrl || '';
+                document.getElementById('ev-paces').value = (ev.paces || []).join(', ');
+                document.getElementById('ev-image').value = ev.image || '';
+                document.getElementById('ev-description').value = ev.description || '';
+                titleHeader.textContent = 'Editar convocatoria';
+                submitBtn.textContent = 'Guardar cambios';
+            } else {
+                document.getElementById('ev-id').value = '';
+                document.getElementById('ev-date').value = '2026-12-13';
+                titleHeader.textContent = 'Nueva cita en el calendario';
+                submitBtn.textContent = 'Publicar en calendario';
+            }
+
+            toggleTypeFields();
+            const modal = document.getElementById('modal-event');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeEventModal() {
+            const modal = document.getElementById('modal-event');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function toggleTypeFields() {
+            const selectedType = document.querySelector('input[name="ev-type"]:checked')?.value;
+            document.getElementById('pace-field-group').classList.toggle('hidden', selectedType !== 'training');
+            document.getElementById('race-link-group').classList.toggle('hidden', selectedType !== 'race');
+        }
+
+        function handleSaveEvent(e) {
+            e.preventDefault();
+            const editId = document.getElementById('ev-id').value;
+            const type = document.querySelector('input[name="ev-type"]:checked').value;
+            const title = document.getElementById('ev-title').value.trim();
+            const level = document.getElementById('ev-level').value;
+            const location = document.getElementById('ev-location').value.trim();
+            const badge = document.getElementById('ev-badge').value.trim();
+            const date = document.getElementById('ev-date').value;
+            const time = document.getElementById('ev-time').value;
+            const km = parseFloat(document.getElementById('ev-km').value) || 10;
+            const elevation = document.getElementById('ev-elevation').value.trim() || 'Llano';
+            const officialUrl = type === 'race' ? document.getElementById('ev-official-url').value.trim() : '';
+            const image = document.getElementById('ev-image').value.trim();
+            const description = document.getElementById('ev-description').value.trim();
+            const pacesRaw = document.getElementById('ev-paces').value.trim();
+
+            const paces = (type === 'training' && pacesRaw)
+                ? pacesRaw.split(',').map(s => s.trim()).filter(Boolean)
+                : [];
+
+            const defaultImg = type === 'training'
+                ? 'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?auto=format&fit=crop&w=1200&q=80'
+                : 'https://images.unsplash.com/photo-1552674605-db6ffd4facb5?auto=format&fit=crop&w=1200&q=80';
+
+            if (editId) {
+                const idx = state.events.findIndex(item => item.id === editId);
+                if (idx !== -1) {
+                    state.events[idx] = {
+                        ...state.events[idx],
+                        type, title, level, location, badge, date, time, km, elevation,
+                        officialUrl, image: image || defaultImg, description, paces
+                    };
+                    saveEvents();
+                    closeEventModal();
+                    renderDetail(editId);
+                    updateHeroStats();
+                    showToast('Convocatoria actualizada correctamente.');
+                }
+            } else {
+                const newEv = {
+                    id: 'ev-' + Date.now(),
+                    type, title, level, location, date, time, km, badge, elevation, officialUrl,
+                    votes: 1,
+                    image: image || defaultImg,
+                    description, paces,
+                    participants: [],
+                    comments: []
+                };
+                state.events.push(newEv);
+                state.userVotes[newEv.id] = true;
+                saveEvents();
+                closeEventModal();
+                navigateTo('detail', newEv.id);
+                updateHeroStats();
+                showToast('Nueva convocatoria publicada en el calendario.');
+            }
+        }
+
+        // Modal: admin
+        function toggleAdminModal() {
+            const passInput = document.getElementById('admin-password');
+            if (passInput) passInput.value = '';
+            document.getElementById('admin-login-box').classList.toggle('hidden', state.isAdmin);
+            document.getElementById('admin-active-box').classList.toggle('hidden', !state.isAdmin);
+            const modal = document.getElementById('modal-admin');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAdminModal() {
+            const modal = document.getElementById('modal-admin');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function verifyAdmin() {
+            const passInput = document.getElementById('admin-password');
+            const entered = passInput ? passInput.value.trim() : '';
+            if (entered === ADMIN_KEY) {
+                state.isAdmin = true;
+                document.getElementById('admin-indicator').classList.remove('hidden');
+                closeAdminModal();
+                renderApp();
+                showToast('Modo administrador activado.');
+            } else {
+                showToast('Contraseña incorrecta.', 'warning');
+            }
+        }
+
+        function logoutAdmin() {
+            state.isAdmin = false;
+            document.getElementById('admin-indicator').classList.add('hidden');
+            closeAdminModal();
+            renderApp();
+            showToast('Sesión de administrador cerrada.');
+        }
+
+        // Toasts
+        function showToast(message, variant = 'default') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'pointer-events-auto flex items-center gap-2.5 px-5 py-3 rounded-full bg-ink text-white shadow-xl text-sm font-medium transform transition-all duration-300 translate-y-2 opacity-0';
+            toast.innerHTML = `
+                <span class="w-2.5 h-2.5 rounded-full ${variant === 'warning' ? 'bg-flame' : 'bg-volt'}"></span>
+                <span>${esc(message)}</span>
+            `;
+            container.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3200);
+        }
+    </script>
+</body>
+</html>
